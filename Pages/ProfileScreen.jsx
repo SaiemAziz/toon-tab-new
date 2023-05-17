@@ -8,10 +8,11 @@ import { ScrollView } from 'react-native';
 import { BACKEND_URI, UserContext } from '../Components/Root';
 import { Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import About from './ProfileComp/About';
+export const opt = ["Posts", "Comments", "About"]
 const ProfileScreen = ({ route, navigation }) => {
     let { logoutUser, user, loading: loadUser } = useContext(UserContext)
-    let [tab, setTab] = useState('posts')
+    let [tab, setTab] = useState(opt[0])
     let handlerBack = () => {
         navigation.navigate("AuthorisedScreen")
     }
@@ -44,9 +45,9 @@ const ProfileScreen = ({ route, navigation }) => {
                         <View className="justify-center items-center h-[240px]">
                             <ActivityIndicator size={70} color="red" />
                         </View> :
-                        <View className="-mt-20">
+                        <View className="-mt-32 flex-row items-center pl-5 mb-5">
 
-                            <View className="mx-auto  overflow-hidden mb-5 rounded-[200px] border-4 border-red-900 h-56 w-56">
+                            <View className="mx-auto  overflow-hidden rounded-[200px] border-4 border-red-900 h-40 w-40">
                                 <Image
                                     className="h-full w-full"
                                     source={{
@@ -55,29 +56,37 @@ const ProfileScreen = ({ route, navigation }) => {
                                     fadeDuration={1000}
                                 />
                             </View>
-                            <Text className="text-center font-semibold text-2xl text-blue-900">@{user?.userName || "No Name"}</Text>
-                            <Text className="text-center italic text-2xl mb-3">{user?.birthDate || "No Birthdate"}</Text>
-                            <View>
+                            <View className="flex-col p-4">
+                                <Text className="text-center font-semibold text-2xl text-blue-900">@{user?.userName || "No Name"}</Text>
+                                <Text className="text-center italic text-2xl mb-3">{user?.birthDate || "No Birthdate"}</Text>
+                                <Text className="">Country: {user?.address?.Country || "-----"}</Text>
+                                <Text className="">Division: {user?.address?.Division || "-----"}</Text>
+                                <Text className="">District: {user?.address?.District || "-----"}</Text>
                             </View>
                         </View>
                 }
             </SafeAreaView>
             <View className="flex-1 ">
-                <View className="flex-row gap-2">
-                    <View className="flex-1 border-t-4 rounded-t-3xl border-red-900 overflow-hidden">
-                        <Pressable onPress={() => setTab('posts')}>
-                            <Text className={`text-center text-xl py-3 ${tab === 'posts' ? 'bg-red-900 text-red-200' : 'text-red-900'}`}>Posts</Text>
-                        </Pressable>
-                    </View>
-                    <View className="flex-1 border-t-4 rounded-t-3xl border-red-900 overflow-hidden">
+                <View className="flex-row">
+                    {
+                        opt.map(option => <View className="flex-1 border-2 border-b-transparent rounded-t-3xl border-red-900 overflow-hidden" key={option}>
+                            <Pressable onPress={() => setTab(option)}>
+                                <Text className={`text-center text-xl py-3 ${tab === option ? 'bg-red-900 text-red-200' : 'text-red-900'}`}>{option}</Text>
+                            </Pressable>
+                        </View>
+                        )
+                    }
+                    {/* <View className="flex-1 border-t-4 rounded-t-3xl border-red-900 overflow-hidden">
                         <Pressable onPress={() => setTab('comments')}>
                             <Text className={`text-center text-xl py-3 ${tab === 'comments' ? 'bg-red-900 text-red-200' : 'text-red-900'}`}>Comments</Text>
                         </Pressable>
-                    </View>
+                    </View> */}
                 </View>
-                <ScrollView className="bg-red-900 p-5">
+                <ScrollView className="bg-red-900  p-3 flex-1">
                     {/* {tab === 'comments' && <MyComments />}
                     {tab === 'posts' && <MyPosts />} */}
+
+                    {tab === 'About' && <About />}
                 </ScrollView>
             </View>
 

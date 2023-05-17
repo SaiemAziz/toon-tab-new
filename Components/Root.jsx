@@ -6,6 +6,7 @@ import { getAuth, createUserWithEmailAndPassword, signOut, signInWithEmailAndPas
 import app from '../firebase/firebase.config'
 import { StackActions, useNavigation } from '@react-navigation/native'
 export const BACKEND_URI = "https://toon-tab-server.vercel.app"
+// export const BACKEND_URI = "http://192.168.0.114:8000"
 export const UserContext = createContext(null)
 const Root = ({ children }) => {
     let navigation = useNavigation()
@@ -59,7 +60,7 @@ const Root = ({ children }) => {
         setLoading(true)
         return signInWithEmailAndPassword(auth, email, password)
     }
-    let logoutUser = async (email, password) => {
+    let logoutUser = async () => {
         setLoading(true)
         signOut(auth)
             .then(async () => {

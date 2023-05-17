@@ -1,5 +1,5 @@
 import { View, Text, Image } from 'react-native'
-import { useContext, useLayoutEffect, useState } from 'react'
+import { useContext, useEffect, useLayoutEffect, useState } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Pressable } from 'react-native'
 import Icon from 'react-native-vector-icons/Fontisto';
@@ -11,32 +11,57 @@ import { BACKEND_URI, UserContext } from '../../Components/Root'
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
+export const categories = ['all', 'cartoon', 'anime']
 const Posts = () => {
     let [showAdd, setShowAdd] = useState(false)
+    let [cat, setCat] = useState(categories[0])
     let [loadPost, setLoadPost] = useState(false)
     let [reCall, setReCall] = useState(false)
     let [posts, setPosts] = useState([])
-
-    useLayoutEffect(() => {
-        func(reCall)
-    }, [reCall])
-    let func = async () => {
-        setLoadPost(!reCall)
-        let allPosts = await AsyncStorage.getItem('allPosts')
-        if (!reCall && allPosts) {
-            allPosts = JSON.parse(allPosts)
-        }
-        else {
+    // useLayoutEffect(() => {
+    //     func(reCall)
+    // }, [reCall])
+    // let func = async () => {
+    //     setLoadPost(!reCall)
+    //     let allPosts = await AsyncStorage.getItem('allPosts')
+    //     if (!reCall && allPosts) {
+    //         allPosts = JSON.parse(allPosts)
+    //     }
+    //     else {
+    //         let res = await fetch(BACKEND_URI + '/all-posts')
+    //         let data = await res.json()
+    //         allPosts = data?.posts
+    //         await AsyncStorage.setItem('allPosts', JSON.stringify(data?.posts))
+    //         setReCall(false)
+    //     }
+    //     setPosts(allPosts)
+    //     setLoadPost(false)
+    // }
+    let postQuery = useQuery({
+        "queryKey": [BACKEND_URI + '/all-posts'],
+        'queryFn': async () => {
             let res = await fetch(BACKEND_URI + '/all-posts')
             let data = await res.json()
-            allPosts = data?.posts
-            await AsyncStorage.setItem('allPosts', JSON.stringify(data?.posts))
-            setReCall(false)
+            return data?.posts
         }
-        setPosts(allPosts)
-        setLoadPost(false)
-    }
+    })
+
+    useLayoutEffect(() => {
+        if (cat == 'all') setPosts(postQuery.data)
+        else {
+            let data = postQuery.data.filter(post => post.category === cat)
+            setPosts(data)
+        }
+    }, [postQuery.data, cat])
     return (<View className="flex-1">
+        <View className="flex-row gap-2 px-5 mb-2">
+            {
+                categories.map(category => <Pressable className={`rounded-lg py-2 border-purple-900 flex-1 ${cat === category ? "border-2" : "border"}`} key={category} onPress={() => setCat(category)}>
+                    <Text className={`text-center text-purple-900 ${cat === category ? " font-extrabold" : "font-thin"}`}>{category.toUpperCase()}</Text>
+                </Pressable>)
+            }
+        </View>
         {
             loadPost ? <View className="flex-1 justify-center items-center">
                 <ActivityIndicator size={80} color="#150015" />
@@ -71,31 +96,45 @@ export function SinglePost({ item, index }) {
     let [likeCount, setLikeCount] = useState(0)
     let [disLikeCount, setDisLikeCount] = useState(0)
     let navigation = useNavigation()
-    useLayoutEffect(() => {
-        let func = async () => {
-            setLoadReact(true)
-            let myReactData = await AsyncStorage.getItem(`react-${user.email}-${_id}`)
-            if (!reCall && myReactData) {
-                myReactData = JSON.parse(myReactData)
-            } else {
-                let res = await fetch(BACKEND_URI + `/react-check?email=${user.email}&postID=${_id}`)
-                myReactData = await res.json()
-                await AsyncStorage.setItem(`react-${user.email}-${_id}`, JSON.stringify(myReactData))
-            }
-            setReact(myReactData.react)
-            setLikeCount(myReactData.liked)
-            setDisLikeCount(myReactData.disliked)
-            setLoadReact(false)
-            setReCall(false)
+    const reactQuery = useQuery({
+        queryKey: [BACKEND_URI + `/react-check?email=${user?.email}&postID=${_id}`],
+        queryFn: async () => {
+            let res = await fetch(BACKEND_URI + `/react-check?email=${user?.email}&postID=${_id}`)
+            myReactData = await res.json()
+            return myReactData
         }
-        if (user?.email)
-            func()
-    }, [user, reCall])
+    })
+    useEffect(() => {
+        setReact(reactQuery?.data?.react)
+        setLikeCount(reactQuery?.data?.liked)
+        setDisLikeCount(reactQuery?.data?.disliked)
+    }, [reactQuery.data])
+
+    // useLayoutEffect(() => {
+    //     let func = async () => {
+    //         setLoadReact(true)
+    //         let myReactData = await AsyncStorage.getItem(`react-${user?.email}-${_id}`)
+    //         if (!reCall && myReactData) {
+    //             myReactData = JSON.parse(myReactData)
+    //         } else {
+    //             let res = await fetch(BACKEND_URI + `/react-check?email=${user?.email}&postID=${_id}`)
+    //             myReactData = await res.json()
+    //             await AsyncStorage.setItem(`react-${user?.email}-${_id}`, JSON.stringify(myReactData))
+    //         }
+    //         setReact(myReactData.react)
+    //         setLikeCount(myReactData.liked)
+    //         setDisLikeCount(myReactData.disliked)
+    //         setLoadReact(false)
+    //         setReCall(false)
+    //     }
+    //     if (user?.email)
+    //         func()
+    // }, [user, reCall])
 
     let handlerReact = (reaction) => {
         // if (reaction === 'liked') setLikeCount(x => x + 1)
         // if (reaction === 'disliked') setDisLikeCount(x => x + 1)
-        setLoadReact(true)
+        // setLoadReact(true)
         if (react === reaction) {
 
             deleteReact(reaction)
@@ -107,12 +146,12 @@ export function SinglePost({ item, index }) {
 
     let deleteReact = (reaction) => {
 
-        fetch(BACKEND_URI + `/react-delete?email=${user.email}&postID=${_id}`, {
+        fetch(BACKEND_URI + `/react-delete?email=${user?.email}&postID=${_id}`, {
             method: 'DELETE'
         })
             .then((res) => res.json())
             .then(() => {
-                setReCall(true)
+                reactQuery.refetch()
                 // if (reaction === 'liked')
                 //     setLikeCount(x => x - 1)
                 // if (reaction === 'disliked')
@@ -123,7 +162,7 @@ export function SinglePost({ item, index }) {
     }
 
     let updateReact = (reaction) => {
-        fetch(BACKEND_URI + `/react-update?email=${user.email}&postID=${_id}`, {
+        fetch(BACKEND_URI + `/react-update?email=${user?.email}&postID=${_id}`, {
             method: "PUT",
             headers: {
                 "content-type": "application/json"
@@ -132,7 +171,7 @@ export function SinglePost({ item, index }) {
         })
             .then((res) => res.json())
             .then(() => {
-                setReCall(true)
+                reactQuery.refetch()
                 // if (react === 'none') {
                 //     if (reaction === 'liked')
                 //         setLikeCount(x => x + 1)
@@ -157,7 +196,7 @@ export function SinglePost({ item, index }) {
     let handlerSeeMore = () => {
         // console.log("clicked");
         // setLikeCount(x => x + 1)
-        // navigation.navigate('Details', item)
+        navigation.navigate('Details', item)
     }
 
     return <Pressable onPress={handlerSeeMore}>
@@ -182,17 +221,18 @@ export function SinglePost({ item, index }) {
 
                 {/* <Text className=" text-blue-500 text-right right-0">See More</Text> */}
                 {
-                    loadReact ?
+                    reactQuery.isLoading ?
                         <View className="justify-center items-center pt-2">
                             <ActivityIndicator size={25} color="purple" />
                         </View> :
                         <View className="flex-row gap-5 pt-2 justify-between ">
                             <Pressable className="flex-row gap-2 items-center" onPress={() => handlerReact('liked')}>
-                                <Icon name="like" size={15} color={react === 'liked' ? 'blue' : "gray"} />
+                                <Icon name="like" size={25} color={react === 'liked' ? 'blue' : "gray"} />
                                 <Text className={react === 'liked' ? 'text-blue-700' : 'text-gray-500'}>{likeCount}</Text>
                             </Pressable>
+                            {/* <Text>{reactQuery.isLoading ? "true" : "false"}</Text> */}
                             <Pressable className="flex-row gap-2 items-center" onPress={() => handlerReact('disliked')}>
-                                <Icon name="dislike" size={15} color={react === 'disliked' ? 'crimson' : "gray"} />
+                                <Icon name="dislike" size={25} color={react === 'disliked' ? 'crimson' : "gray"} />
                                 <Text className={react === 'disliked' ? 'text-red-700' : 'text-gray-500'}>{disLikeCount}</Text>
                             </Pressable>
                         </View>
