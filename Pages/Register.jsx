@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
 import React, { useContext, useState } from 'react'
 import { ImageBackground } from 'react-native'
 import { Pressable } from 'react-native'
@@ -7,6 +7,8 @@ import { TextInput } from 'react-native'
 import Icon from 'react-native-vector-icons/AntDesign';
 import { ActivityIndicator } from 'react-native'
 import { ScrollView } from 'react-native'
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 // import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { BACKEND_URI, UserContext } from '../Components/Root'
@@ -17,8 +19,9 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 const Register = () => {
     let navigation = useNavigation()
-    let { registerUser, user, loading, setLoading, setUser, updateUser, logoutUser } = useContext(UserContext)
+    let { registerUser, user, loading, setLoading, setUser, updateUser, logoutUser, sendVerification } = useContext(UserContext)
     let [email, setEmail] = useState('')
+    let [selectedImage, setSelectedImage] = useState('')
     let [userName, setUserName] = useState('')
     let [userNames, setUserNames] = useState('')
     let [available, setAvailable] = useState('')
@@ -39,16 +42,31 @@ const Register = () => {
         let formEmail = email;
         let formPass = pass;
         let formCon = con;
+        let formImage = selectedImage
 
-        if (!formDate || !formName || !formEmail.includes('@') || !formPass || !formCon) {
+        if (!formDate || !formName || !formEmail.includes('@') || !formPass || !formCon || !formImage) {
             setErr("Please enter all valid information");
             return;
         }
-
+        formImage = await uploadImage(`data:image/jpeg;base64,${formImage}`)
+        // console.log(formImage);
+        if (!formImage)
+            return setErr("Photo upload failed, try again");
         setErr("")
+
+        let userInfo = {
+            email: formEmail,
+            rating: 0,
+            birthDate: formDate,
+            password: formPass,
+            photoURL: formImage,
+            role: "user",
+            userName: formName,
+        }
 
         registerUser(email, pass)
             .then((userCredential) => {
+                sendVerification()
                 mongoDBUserEntry(userInfo)
             })
             .catch((error) => {
@@ -89,7 +107,42 @@ const Register = () => {
             setBirthDate(null)
         }
     };
-
+    const PickImage = async () => {
+        setSelectedImage("")
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        });
+        console.log(result);
+        if (!result.canceled) {
+            // setSelectedImage("image.jpg")
+            const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {
+                encoding: FileSystem.EncodingType.Base64,
+            });
+            // const imageUrl = await uploadImage(`data:image/jpeg;base64,${base64}`);
+            setSelectedImage(base64)
+        }
+    };
+    const uploadImage = async (uri) => {
+        try {
+            const formData = new FormData();
+            formData.append('image', {
+                uri,
+                type: 'image/jpeg',
+                name: 'upload.jpg',
+            });
+            const response = await fetch('https://api.imgbb.com/1/upload?key=a9952d5dc535d9f1c2680526d288c8dc', {
+                method: 'POST',
+                body: formData,
+            });
+            const data = await response.json();
+            return data.data.url;
+        } catch (error) {
+            console.log(error);
+        }
+    };
     return (
         <ImageBackground
             source={require('../assets/images/tom_and_jerry_PNG66.png')}
@@ -127,6 +180,34 @@ const Register = () => {
                             value={email}
                             onChangeText={(text) => setEmail(text)}
                         />
+                        <TouchableOpacity onPress={PickImage}>
+                            <View className="bg-green-100 p-3 flex-row justify-between">
+                                <Text className=" text-lg text-green-900">{selectedImage ? "Photo selected" : "Upload Photo"}</Text>
+                                {
+                                    !selectedImage ?
+                                        <Icon name="pluscircle" size={25} color="darkgreen" /> :
+                                        <Icon name="minuscircle" size={25} color="darkred" />
+                                }
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity className={inputDesign + " flex-row justify-between"} onPress={() => setShow(true)}>
+                            {
+                                birthDate ?
+                                    <Text className="text-green-900 text-lg">{birthDate}</Text>
+                                    :
+                                    <Text className="text-gray-600 text-lg">Choose Birthdate</Text>
+                            }
+                            <Icon name="pluscircle" size={25} color="#9ca3af" />
+                            {show && (
+                                <DateTimePicker
+                                    testID="dateTimePicker"
+                                    value={date}
+                                    mode={mode}
+                                    is24Hour={true}
+                                    onChange={handleDatePicker}
+                                />
+                            )}
+                        </TouchableOpacity>
                         <View
                             className={inputDesign + " flex-row justify-between items-center "}>
                             <TextInput
@@ -142,6 +223,7 @@ const Register = () => {
                                 </Pressable>
                             </View>
                         </View>
+
                         <View
                             className={inputDesign + " flex-row justify-between items-center "}>
                             <TextInput
@@ -159,24 +241,7 @@ const Register = () => {
                         </View>
 
 
-                        <Pressable className={inputDesign + " flex-row justify-between"} onPress={() => setShow(true)}>
-                            {
-                                birthDate ?
-                                    <Text className="text-green-900 text-lg">{birthDate}</Text>
-                                    :
-                                    <Text className="text-gray-600 text-lg">Choose Birthdate</Text>
-                            }
-                            <Icon name="pluscircle" size={25} color="#9ca3af" />
-                            {show && (
-                                <DateTimePicker
-                                    testID="dateTimePicker"
-                                    value={date}
-                                    mode={mode}
-                                    is24Hour={true}
-                                    onChange={handleDatePicker}
-                                />
-                            )}
-                        </Pressable>
+
                     </ScrollView>
                 </View>
                 {err && <Text className="mb-5 font-semibold text-center text-red-500">{err}</Text>}

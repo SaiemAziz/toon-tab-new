@@ -12,11 +12,13 @@ import { ScrollView } from 'react-native'
 import { BACKEND_URI, UserContext } from '../Components/Root'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { ToastAndroid } from 'react-native'
 
 const Login = () => {
     let navigation = useNavigation()
-    let { loginUser, user, loading, setLoading, setUser, updateUser } = useContext(UserContext)
+    let { loginUser, user, loading, setLoading, setUser, updateUser, sendVerification, logoutUser } = useContext(UserContext)
     let [email, setEmail] = useState('')
+    let [verifyBtn, setVerifyBtn] = useState(false)
     let [userName, setUserName] = useState('')
     let [userNames, setUserNames] = useState('')
     let [available, setAvailable] = useState('')
@@ -43,17 +45,24 @@ const Login = () => {
         loginUser(formEmail, formPass)
             .then(async res => {
                 // console.log(BACKEND_URI + `/user-info?email=${res?.user?.email}`);
-                if (res?.user?.email) {
+                // console.log(res?.user?.emailVerified);
+                if (!res?.user?.emailVerified) {
+                    ToastAndroid.show('Email is not verifed yet.', ToastAndroid.SHORT);
+                    setVerifyBtn(true)
+                    setLoading(false)
+                }
+                else if (res?.user?.email) {
+                    setVerifyBtn(false)
                     let res2 = await fetch(BACKEND_URI + `/user-info?email=${res?.user?.email}`)
                     let data = await res2.json()
                     // console.log(data);
                     if (data) {
                         setUser(data)
-                        setLoading(false)
                         navigation.dispatch(
                             StackActions.replace('AuthorisedScreen')
                         );
                         await AsyncStorage.setItem('user', JSON.stringify(data))
+                        setLoading(false)
                     } else {
                         setUser(null)
                         setLoading(false)
@@ -69,6 +78,13 @@ const Login = () => {
             });
         // setEmail('')
         // setPass('')
+    }
+
+    let verifyHandler = () => {
+        if (email) {
+            sendVerification();
+        }
+        setVerifyBtn(false)
     }
     return (
         <ImageBackground
@@ -178,6 +194,13 @@ const Login = () => {
                             New Member?
                         </Text>
                     </Pressable>
+                    {
+                        verifyBtn && <Pressable onPress={verifyHandler}
+                        ><Text className="text-blue-900 text-lg">
+                                Send Verification
+                            </Text>
+                        </Pressable>
+                    }
                 </View>
 
 

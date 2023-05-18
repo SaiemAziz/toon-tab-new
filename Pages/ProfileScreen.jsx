@@ -12,6 +12,7 @@ import About from './ProfileComp/About';
 export const opt = ["Posts", "Comments", "About"]
 const ProfileScreen = ({ route, navigation }) => {
     let { logoutUser, user, loading: loadUser } = useContext(UserContext)
+    let time = new Date(user?.birthDate)
     let [tab, setTab] = useState(opt[0])
     let handlerBack = () => {
         navigation.navigate("AuthorisedScreen")
@@ -56,12 +57,12 @@ const ProfileScreen = ({ route, navigation }) => {
                                     fadeDuration={1000}
                                 />
                             </View>
-                            <View className="flex-col p-4">
-                                <Text className="text-center font-semibold text-2xl text-blue-900">@{user?.userName || "No Name"}</Text>
-                                <Text className="text-center italic text-2xl mb-3">{user?.birthDate || "No Birthdate"}</Text>
-                                <Text className="">Country: {user?.address?.Country || "-----"}</Text>
-                                <Text className="">Division: {user?.address?.Division || "-----"}</Text>
-                                <Text className="">District: {user?.address?.District || "-----"}</Text>
+                            <View className="flex-col p-2">
+                                <Text className="w-[200px] text-center font-semibold text-xl text-blue-900">@{user?.userName || "No Name"}</Text>
+                                <Text className="text-center italic text-xl mb-3">{time.toLocaleDateString() || "No Birthdate"}</Text>
+                                <Text className="text-center">Country: {user?.address?.Country || "-----"}</Text>
+                                <Text className="text-center">Division: {user?.address?.Division || "-----"}</Text>
+                                <Text className="text-center">District: {user?.address?.District || "-----"}</Text>
                             </View>
                         </View>
                 }
