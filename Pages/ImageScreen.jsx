@@ -32,11 +32,11 @@ const ImageScreen = () => {
             aspect: [1, 1],
             quality: 1
         })
-        console.log(result);
+        // console.log(result);
         if (!result.canceled)
             setImage(result.assets[0].uri)
     }
-    console.log(image);
+    // console.log(image);
     return (
         <SafeAreaView className="flex-1 justify-center gap-5 items-center">
             <TouchableOpacity className="p-5 rounded-full bg-green-950" onPress={PickImage}>

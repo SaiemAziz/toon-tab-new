@@ -6,8 +6,10 @@ import { getAuth, createUserWithEmailAndPassword, signOut, signInWithEmailAndPas
 import app from '../firebase/firebase.config'
 import { StackActions, useNavigation } from '@react-navigation/native'
 import { ToastAndroid } from 'react-native';
-export const BACKEND_URI = "https://toon-tab-server.vercel.app"
-// export const BACKEND_URI = "http://192.168.0.114:8000"
+// export const BACKEND_URI = "https://toon-tab-server.vercel.app"
+export const BACKEND_URI = "http://192.168.0.114:8000"
+export const categories = ['all', 'cartoon', 'anime']
+
 export const UserContext = createContext(null)
 const Root = ({ children }) => {
     let navigation = useNavigation()
@@ -23,7 +25,7 @@ const Root = ({ children }) => {
                 setLoading(false)
             }
             else onAuthStateChanged(auth, async (currentUser) => {
-                console.log(currentUser);
+                // console.log(currentUser);
                 if (currentUser?.uid) {
                     if (currentUser?.emailVerified) {
                         let res = await fetch(BACKEND_URI + `/user-info?email=${currentUser?.email}`)

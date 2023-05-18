@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity } from 'react-native'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useLayoutEffect, useState } from 'react'
 import { ImageBackground } from 'react-native'
 import { Pressable } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
@@ -16,6 +16,27 @@ import { BACKEND_URI, UserContext } from '../Components/Root'
 
 import { ToastAndroid } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useQuery } from '@tanstack/react-query'
+export const uploadImage = async (uri) => {
+    try {
+        const formData = new FormData();
+        formData.append('image', {
+            uri,
+            type: 'image/jpeg',
+            name: 'upload.jpg',
+        });
+        const response = await fetch('https://api.imgbb.com/1/upload?key=a9952d5dc535d9f1c2680526d288c8dc', {
+            method: 'POST',
+            body: formData,
+        });
+        const data = await response.json();
+        return data.data.url;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+
 
 const Register = () => {
     let navigation = useNavigation()
@@ -36,6 +57,30 @@ const Register = () => {
     const [show, setShow] = useState(false);
     let inputDesign = "p-3 text-green-900 text-lg bg-[#ffffffB3] border-y border-green-500 flex-1"
 
+
+    let userQuery = useQuery({
+        'queryKey': [BACKEND_URI + '/all-users'],
+        'queryFn': async () => {
+            let res = await fetch(BACKEND_URI + '/all-users')
+            let data = await res.json()
+            return data
+        }
+    })
+    useLayoutEffect(() => {
+        let names = {}
+        // console.log(userQuery.data?.users);
+        if (userQuery.data)
+            userQuery.data.users.forEach(u => names[u.userName.toLowerCase()] = true)
+        setUserNames(names)
+    }, [userQuery.data])
+    useLayoutEffect(() => {
+        if (userNames[userName.toLowerCase()]) setAvailable('taken')
+        else if (userName) setAvailable('available')
+        else setAvailable('')
+    }, [userName])
+
+
+
     let handlerRegister = async () => {
         let formDate = birthDate ? date : null;
         let formName = userName;
@@ -44,14 +89,18 @@ const Register = () => {
         let formCon = con;
         let formImage = selectedImage
 
+        if (available === 'taken') return setErr('Username not available')
         if (!formDate || !formName || !formEmail.includes('@') || !formPass || !formCon || !formImage) {
             setErr("Please enter all valid information");
             return;
         }
         formImage = await uploadImage(`data:image/jpeg;base64,${formImage}`)
         // console.log(formImage);
-        if (!formImage)
+        setLoading(true);
+        if (!formImage) {
+            setLoading(false);
             return setErr("Photo upload failed, try again");
+        }
         setErr("")
 
         let userInfo = {
@@ -125,24 +174,7 @@ const Register = () => {
             setSelectedImage(base64)
         }
     };
-    const uploadImage = async (uri) => {
-        try {
-            const formData = new FormData();
-            formData.append('image', {
-                uri,
-                type: 'image/jpeg',
-                name: 'upload.jpg',
-            });
-            const response = await fetch('https://api.imgbb.com/1/upload?key=a9952d5dc535d9f1c2680526d288c8dc', {
-                method: 'POST',
-                body: formData,
-            });
-            const data = await response.json();
-            return data.data.url;
-        } catch (error) {
-            console.log(error);
-        }
-    };
+
     return (
         <ImageBackground
             source={require('../assets/images/tom_and_jerry_PNG66.png')}
@@ -162,7 +194,7 @@ const Register = () => {
                                 placeholder="User Name"
                                 className="text-lg text-green-900 flex-1"
                                 value={userName}
-                                onChangeText={(text) => setUserName(text)}
+                                onChangeText={(text) => !text.includes(' ') && setUserName(text)}
                                 onBlur={() => setAvailable(x => x === "available" ? '' : x)}
                             />
                             {

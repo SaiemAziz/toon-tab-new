@@ -13,6 +13,7 @@ import { BACKEND_URI, UserContext } from '../Components/Root'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ToastAndroid } from 'react-native'
+import { TouchableOpacity } from 'react-native'
 
 const Login = () => {
     let navigation = useNavigation()
@@ -195,11 +196,12 @@ const Login = () => {
                         </Text>
                     </Pressable>
                     {
-                        verifyBtn && <Pressable onPress={verifyHandler}
+                        verifyBtn &&
+                        <TouchableOpacity className="border border-blue-900 p-3 rounded-xl" onPress={verifyHandler}
                         ><Text className="text-blue-900 text-lg">
                                 Send Verification
                             </Text>
-                        </Pressable>
+                        </TouchableOpacity>
                     }
                 </View>
 

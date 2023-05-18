@@ -6,18 +6,17 @@ import Icon from 'react-native-vector-icons/Fontisto';
 import { ActivityIndicator } from 'react-native';
 import { FlatList } from 'react-native';
 import AddPost from '../../Components/AddPost';
-import { BACKEND_URI, UserContext } from '../../Components/Root'
+import { BACKEND_URI, UserContext, categories } from '../../Components/Root'
 
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
-export const categories = ['all', 'cartoon', 'anime']
 const Posts = () => {
     let [showAdd, setShowAdd] = useState(false)
     let [cat, setCat] = useState(categories[0])
     let [loadPost, setLoadPost] = useState(false)
-    let [reCall, setReCall] = useState(false)
+    // let [reCall, setReCall] = useState(false)
     let [posts, setPosts] = useState([])
     // useLayoutEffect(() => {
     //     func(reCall)
@@ -80,7 +79,7 @@ const Posts = () => {
                 <Icon name="plus-a" size={25} color="white" />
             </LinearGradient>
         </TouchableOpacity>
-        <AddPost showAdd={showAdd} setShowAdd={setShowAdd} setReCall={setReCall} />
+        <AddPost showAdd={showAdd} setShowAdd={setShowAdd} setReCall={postQuery.refetch} />
     </View>
     )
 }

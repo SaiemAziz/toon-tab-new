@@ -9,6 +9,7 @@ const Details = ({ navigation, route }) => {
     let { user } = useContext(UserContext)
     let item = route?.params
     let { image, details, authorEmail, time, title, _id } = item
+    time = new Date(time)
     let modifiedDetails = details.split(". ")
     let [postAuthor, setPostAuthor] = useState(null)
     let [comments, setComments] = useState([])
@@ -79,14 +80,18 @@ const Details = ({ navigation, route }) => {
                                 <Text className="text-sm font-bold text-white bg-orange-500 rounded-full px-3 py-2">@{postAuthor?.userName}</Text>
                             </View>
                     }
-                    <Text className="text-orange-900 italic font-semibold">{time}</Text>
+                    <View>
+
+                        <Text className="text-orange-900 italic font-semibold">{time.toLocaleDateString()} </Text>
+                        <Text className="text-orange-900 italic font-semibold">{time.toLocaleTimeString('en-US')}</Text>
+                    </View>
                 </View>
                 <Text className="mb-5 text-justify text-lg text-slate-700 ">
-                    {modifiedDetails.slice(0, 1)}
+                    {modifiedDetails}
                 </Text>
-                <Text className="mb-5 text-justify text-lg text-slate-700 ">
+                {/* <Text className="mb-5 text-justify text-lg text-slate-700 ">
                     {modifiedDetails.slice(1, 2)}
-                </Text>
+                </Text> */}
 
             </ScrollView>
 
