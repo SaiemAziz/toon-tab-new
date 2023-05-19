@@ -26,7 +26,7 @@ const Details = ({ navigation, route }) => {
     }, [])
 
     let handlerBack = () => {
-        navigation.navigate("AuthorisedScreen")
+        navigation.goBack()
     }
 
     let handlerComment = () => {
@@ -54,14 +54,16 @@ const Details = ({ navigation, route }) => {
                 </View>
             </View>
             <ScrollView className="mb-7 px-5">
-                <Text className="text-center mb-5 text-3xl font-bold text-orange-900">
-                    {title}
-                </Text>
+                <View className="mb-2">
+                    <Text className="text-center text-3xl font-bold text-orange-900">
+                        {title}
+                    </Text>
+                </View>
                 <Image
                     source={{
                         uri: image
                     }}
-                    className="w-full h-56 rounded-2xl"
+                    className="w-full -mt-16 h-56 rounded-2xl"
                     resizeMode="contain"
                 />
                 <View className="my-5 flex-row justify-between items-center">

@@ -62,7 +62,7 @@ const Posts = () => {
             }
         </View>
         {
-            loadPost ? <View className="flex-1 justify-center items-center">
+            postQuery.isLoading ? <View className="flex-1 justify-center items-center">
                 <ActivityIndicator size={80} color="#150015" />
             </View> :
                 <FlatList

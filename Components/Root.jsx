@@ -34,7 +34,7 @@ const Root = ({ children }) => {
                             // console.log(data);
                             setUser(data)
                             setLoading(false)
-                            await AsyncStorage.setItem('user', JSON.stringify(data))
+                            // await AsyncStorage.setItem('user', JSON.stringify(data))
                         } else {
                             setUser(null)
                             setLoading(false)

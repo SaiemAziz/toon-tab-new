@@ -9,6 +9,7 @@ import { BACKEND_URI, UserContext } from '../Components/Root';
 import { Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import About from './ProfileComp/About';
+import MyPosts from './ProfileComp/MyPosts';
 export const opt = ["Posts", "Comments", "About"]
 const ProfileScreen = ({ route, navigation }) => {
     let { logoutUser, user, loading: loadUser } = useContext(UserContext)
@@ -21,13 +22,13 @@ const ProfileScreen = ({ route, navigation }) => {
         logoutUser()
     }
     return (
-        <LinearGradient colors={['white', 'red']} className="flex-1">
-            <LinearGradient colors={['red', 'transparent']} className="flex-row justify-between items-center pt-5 px-5 pb-20 pr-2">
+        <LinearGradient colors={['white', 'green']} className="flex-1">
+            <LinearGradient colors={['green', 'transparent']} className="flex-row justify-between items-center pt-5 px-5 pb-20 pr-2">
                 <SafeAreaView className="flex-1 flex-row justify-between items-center mb-5">
 
 
                     <View className="rounded-3xl border-2 border-white overflow-hidden w-fit">
-                        <Pressable className="justify-center items-center" android_ripple={{ color: "red" }} onPress={handlerBack}>
+                        <Pressable className="justify-center items-center" android_ripple={{ color: "green" }} onPress={handlerBack}>
                             <Icon name="keyboard-backspace" size={35} color="white" />
                         </Pressable>
                     </View>
@@ -44,11 +45,11 @@ const ProfileScreen = ({ route, navigation }) => {
                 {
                     loadUser ?
                         <View className="justify-center items-center h-[240px]">
-                            <ActivityIndicator size={70} color="red" />
+                            <ActivityIndicator size={70} color="green" />
                         </View> :
                         <View className="-mt-32 flex-row items-center pl-5 mb-5">
 
-                            <View className="mx-auto  overflow-hidden rounded-[200px] border-4 border-red-900 h-40 w-40">
+                            <View className="mx-auto  overflow-hidden rounded-[200px] border-4 border-green-900 h-40 w-40">
                                 <Image
                                     className="h-full w-full"
                                     source={{
@@ -70,25 +71,25 @@ const ProfileScreen = ({ route, navigation }) => {
             <View className="flex-1 ">
                 <View className="flex-row">
                     {
-                        opt.map(option => <View className="flex-1 border-2 border-b-transparent rounded-t-3xl border-red-900 overflow-hidden" key={option}>
+                        opt.map(option => <View className="flex-1 border-2 border-b-transparent rounded-t-3xl border-green-900 overflow-hidden" key={option}>
                             <Pressable onPress={() => setTab(option)}>
-                                <Text className={`text-center text-xl py-3 ${tab === option ? 'bg-red-900 text-red-200' : 'text-red-900'}`}>{option}</Text>
+                                <Text className={`text-center text-xl py-3 ${tab === option ? 'bg-green-900 text-green-200' : 'text-green-900'}`}>{option}</Text>
                             </Pressable>
                         </View>
                         )
                     }
-                    {/* <View className="flex-1 border-t-4 rounded-t-3xl border-red-900 overflow-hidden">
+                    {/* <View className="flex-1 border-t-4 rounded-t-3xl border-green-900 overflow-hidden">
                         <Pressable onPress={() => setTab('comments')}>
-                            <Text className={`text-center text-xl py-3 ${tab === 'comments' ? 'bg-red-900 text-red-200' : 'text-red-900'}`}>Comments</Text>
+                            <Text className={`text-center text-xl py-3 ${tab === 'comments' ? 'bg-green-900 text-green-200' : 'text-green-900'}`}>Comments</Text>
                         </Pressable>
                     </View> */}
                 </View>
-                <ScrollView className="bg-red-900  p-3 flex-1">
-                    {/* {tab === 'comments' && <MyComments />}
-                    {tab === 'posts' && <MyPosts />} */}
+                <View className="bg-green-900 p-2 flex-1">
+                    {/* {tab === 'comments' && <MyComments />} */}
+                    {tab === 'Posts' && <MyPosts />}
 
                     {tab === 'About' && <About />}
-                </ScrollView>
+                </View>
             </View>
 
         </LinearGradient>
