@@ -1,13 +1,13 @@
 import { View, Text } from 'react-native'
-import React, { createContext, useLayoutEffect, useState } from 'react'
+import React, { createContext, useEffect, useLayoutEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { getAuth, createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword, updateProfile, onAuthStateChanged, sendEmailVerification } from "firebase/auth";
 import app from '../firebase/firebase.config'
 import { StackActions, useNavigation } from '@react-navigation/native'
 import { ToastAndroid } from 'react-native';
-// export const BACKEND_URI = "https://toon-tab-server.vercel.app"
-export const BACKEND_URI = "http://192.168.0.114:8000"
+export const BACKEND_URI = "https://toon-tab-server.vercel.app"
+// export const BACKEND_URI = "http://192.168.0.114:8000"
 export const categories = ['all', 'cartoon', 'anime']
 
 export const UserContext = createContext(null)
@@ -34,7 +34,7 @@ const Root = ({ children }) => {
                             // console.log(data);
                             setUser(data)
                             setLoading(false)
-                            // await AsyncStorage.setItem('user', JSON.stringify(data))
+                            await AsyncStorage.setItem('user', JSON.stringify(data))
                         } else {
                             setUser(null)
                             setLoading(false)
@@ -57,6 +57,12 @@ const Root = ({ children }) => {
 
         func()
     }, [])
+    useEffect(() => {
+        let func = async () => {
+            await AsyncStorage.setItem('user', JSON.stringify(user))
+        }
+        func()
+    }, [user])
     // register new USER
     let registerUser = async (email, password) => {
         setLoading(true)

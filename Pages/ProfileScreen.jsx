@@ -10,7 +10,7 @@ import { Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import About from './ProfileComp/About';
 import MyPosts from './ProfileComp/MyPosts';
-export const opt = ["Posts", "Comments", "About"]
+export const opt = ["Posts", "About"]
 const ProfileScreen = ({ route, navigation }) => {
     let { logoutUser, user, loading: loadUser } = useContext(UserContext)
     let time = new Date(user?.birthDate)

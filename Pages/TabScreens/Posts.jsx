@@ -159,7 +159,6 @@ export function SinglePost({ item, index }) {
                 // setLoadReact(false)
             })
     }
-
     let updateReact = (reaction) => {
         fetch(BACKEND_URI + `/react-update?email=${user?.email}&postID=${_id}`, {
             method: "PUT",

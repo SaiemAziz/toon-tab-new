@@ -19,7 +19,7 @@ const StartScreen = ({ navigation, route }) => {
             }, 5000);
     }, [loading])
     return (
-        <LinearGradient colors={["lightblue", "darkblue"]} className="flex-1 bg-blue-400">
+        <LinearGradient colors={["white", "darkblue"]} className="flex-1 bg-blue-400">
             <Lottie
                 autoPlay
                 loop
