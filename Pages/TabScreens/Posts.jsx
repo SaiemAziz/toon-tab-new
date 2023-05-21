@@ -71,6 +71,7 @@ const Posts = () => {
                     renderItem={({ item, index }) => <SinglePost
                         item={item}
                         index={index}
+                        color="purple"
                     />}
                     keyExtractor={(item, index) => index}
                 />}
@@ -86,7 +87,7 @@ const Posts = () => {
 
 export default Posts
 
-export function SinglePost({ item, index }) {
+export function SinglePost({ item, index, color }) {
     let { user } = useContext(UserContext)
     let { image, details, authorEmail, time, title, _id } = item
     let [react, setReact] = useState('none')
@@ -198,7 +199,7 @@ export function SinglePost({ item, index }) {
     }
 
     return <Pressable onPress={handlerSeeMore}>
-        <View className="border-4 rounded-2xl overflow-hidden border-white mb-5 bg-purple-200 flex-row items-center">
+        <View className={`border-4 rounded-2xl overflow-hidden border-white mb-5 bg-${color}-200 flex-row items-center`}>
 
             <Image
                 source={{
@@ -206,7 +207,7 @@ export function SinglePost({ item, index }) {
                 }}
                 fadeDuration={1000}
                 resizeMode="cover"
-                className="h-full w-1/3 rounded-l-xl bg-purple-900"
+                className={`h-full w-1/3 rounded-l-xl bg-${color}-900`}
 
             />
             <View className="flex-1 p-3">
@@ -221,7 +222,7 @@ export function SinglePost({ item, index }) {
                 {
                     reactQuery.isLoading ?
                         <View className="justify-center items-center pt-2">
-                            <ActivityIndicator size={25} color="purple" />
+                            <ActivityIndicator size={25} color={color} />
                         </View> :
                         <View className="flex-row gap-5 pt-2 justify-between ">
                             <Pressable className="flex-row gap-2 items-center" onPress={() => handlerReact('liked')}>

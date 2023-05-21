@@ -97,6 +97,7 @@ const MyPosts = () => {
                             <SinglePost
                                 item={item}
                                 index={index}
+                                color="green"
                             />
                         </View>
                     }

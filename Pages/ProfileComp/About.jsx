@@ -65,7 +65,7 @@ const About = () => {
                 body: JSON.stringify({ address: address })
             })
             let data = await res.json()
-            console.log(data);
+            // console.log(data);
             setUser(prev => {
                 return { ...prev, address: address }
             })
@@ -75,7 +75,7 @@ const About = () => {
         <ScrollView className="relative px-3">
             <Text className="text-white border-b-2 font-bold text-right pb-2 border-white">Address</Text>
             <View className="flex-row gap-5 mt-1 items-center">
-                <Text className="text-red-200">Country:</Text>
+                <Text className="text-green-200">Country:</Text>
                 <View className="flex-1">
                     <SelectList
                         dropdownTextStyles={{ color: "#ffffff" }}
@@ -90,7 +90,7 @@ const About = () => {
             </View>
             {
                 divisions.length > 0 && <View className="flex-row gap-5 mt-1 items-center">
-                    <Text className="text-red-200">Division:</Text>
+                    <Text className="text-green-200">Division:</Text>
                     <View className="flex-1">
                         <SelectList
                             dropdownTextStyles={{ color: "#ffffff" }}
@@ -106,7 +106,7 @@ const About = () => {
             }
             {
                 districts.length > 0 && <View className="flex-row gap-5 mt-1 items-center">
-                    <Text className="text-red-200">District:</Text>
+                    <Text className="text-green-200">District:</Text>
                     <View className="flex-1">
                         <SelectList
                             dropdownTextStyles={{ color: "#ffffff" }} inputStyles={{ color: "#ffffff" }}

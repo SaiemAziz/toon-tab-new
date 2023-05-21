@@ -7,7 +7,7 @@ import app from '../firebase/firebase.config'
 import { StackActions, useNavigation } from '@react-navigation/native'
 import { ToastAndroid } from 'react-native';
 export const BACKEND_URI = "https://toon-tab-server.vercel.app"
-// export const BACKEND_URI = "http://192.168.0.114:8000"
+// export const BACKEND_URI = "http://192.168.1.102:8000"
 export const categories = ['all', 'cartoon', 'anime']
 
 export const UserContext = createContext(null)

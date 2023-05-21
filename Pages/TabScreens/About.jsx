@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { BACKEND_URI, UserContext } from '../../Components/Root'
+import { useQuery } from '@tanstack/react-query';
 // import MapView from 'react-native-maps';
 
 const About = () => {
@@ -11,8 +12,15 @@ const About = () => {
     let { user, setUser, loading } = useContext(UserContext)
 
     let [rating, setRating] = useState(user?.rating || 0)
-
-
+    let reactQuery = useQuery({
+        'queryKey': [BACKEND_URI + "/average-rating"],
+        'queryFn': async () => {
+            let res = await fetch(BACKEND_URI + "/average-rating")
+            let data = await res.json()
+            return data
+        }
+    })
+    // console.log(reactQuery.data?);
 
     let handlerRate = (rate) => {
         if (rate === rating) {
@@ -43,6 +51,7 @@ const About = () => {
             .then(data => {
                 if (rate > 0)
                     ToastAndroid.show('Thank You For Rating Us', ToastAndroid.SHORT);
+                reactQuery.refetch()
             })
     }
 
@@ -60,9 +69,9 @@ const About = () => {
                     <Text className="text-4xl text-purple-900  font-bold">Matters</Text>
                     <Text className="text-4xl text-purple-900  font-bold">To Us</Text>
                 </View>
-                <Text className="text-xl text-white bg-purple-700 w-1/2 rounded-r-3xl mb-7 text-center p-2">Please Rate</Text>
+                <Text className="text-xl text-white bg-purple-700 w-1/2 rounded-r-3xl mb-3 text-center p-2">Please Rate</Text>
                 {/* <Text className="text-center italic text-lg border-4 p-5 my-5 rounded-2xl border-purple-700 font-extrabold">We work hard to serve you better and would love to know how would you rate our app?</Text> */}
-                <View className="flex-row justify-center gap-2 ml-3 mb-20 w-1/2 scale-105">{
+                <View className="flex-row justify-center gap-2 ml-3 w-1/2 scale-105">{
                     [1, 2, 3, 4, 5].map(i => (
                         <Pressable key={i} onPress={() => handlerRate(i)}>
                             <Icon name={`star${rating >= i ? '-sharp' : '-outline'}`} size={33} color="#9d009f" />
@@ -81,6 +90,9 @@ const About = () => {
                     <Pressable onPress={() => handlerRate(5)}>
                         <Icon name={`star${rating >= 5 ? '-sharp' : '-outline'}`} size={33} color="#9d009f" />
                     </Pressable> */}
+                </View>
+                <View className="w-[200px] bg-orange-300 p-2 mb-10 mt-3 rounded-r-3xl">
+                    <Text className="text-orange-900 text-xl text-center">{reactQuery.data?.count} user rated {reactQuery.data?.avgRating.toFixed(2)}</Text>
                 </View>
                 <Text className="text-4xl my-5 text-purple-900 text-right font-bold">Our Location</Text>
                 <View className="flex-1  rounded-2xl border-y-white overflow-hidden shadow-2xl">

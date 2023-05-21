@@ -20,10 +20,20 @@ const Videos = () => {
             id: "l2VTzluCh24"
         },
         {
-            showName: "Demon Slayer",
+            showName: "DEMON SLAYER",
             title: "D E M O N S - [Demon Slayer 4k edit]",
             id: "k_CxMefC7mA"
-        }
+        },
+        {
+            showName: "FAMILY GUY",
+            title: "Family Guy Compilation Funny Moments",
+            id: "P2T5lCzoRTI"
+        },
+        {
+            showName: "NARUTO",
+            title: "MINATO RAP | Yellow Flash | RUSTAGE [Naruto Rap]",
+            id: "YTYMyRRlM_I"
+        },
     ]
     let [selected, setSeletected] = useState(videos[0])
     // const [playing, setPlaying] = useState(false);

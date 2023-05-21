@@ -11,6 +11,7 @@ const Details = ({ navigation, route }) => {
     let { image, details, authorEmail, time, title, _id } = item
     time = new Date(time)
     let modifiedDetails = details.split(". ")
+    let modifiedTitle = title.split("\n")
     let [postAuthor, setPostAuthor] = useState(null)
     let [comments, setComments] = useState([])
     let [myComment, setMyComment] = useState('')
@@ -36,7 +37,7 @@ const Details = ({ navigation, route }) => {
 
 
     return (
-        <LinearGradient className="flex-1 pt-7" colors={['white', 'orange']}>
+        <LinearGradient className="flex-1 pt-7 pb-5" colors={['white', 'orange']}>
 
             <View className="flex-row justify-between p-5 ">
                 <View className="rounded-full overflow-hidden w-fit">
@@ -53,17 +54,17 @@ const Details = ({ navigation, route }) => {
                     </Pressable>
                 </View>
             </View>
-            <ScrollView className="mb-7 px-5">
-                <View className="mb-2">
+            <ScrollView className=" px-5">
+                <View className="mb-5">
                     <Text className="text-center text-3xl font-bold text-orange-900">
-                        {title}
+                        {modifiedTitle[0]}
                     </Text>
                 </View>
                 <Image
                     source={{
                         uri: image
                     }}
-                    className="w-full -mt-16 h-56 rounded-2xl"
+                    className="w-full h-56 rounded-2xl"
                     resizeMode="contain"
                 />
                 <View className="my-5 flex-row justify-between items-center">
@@ -88,8 +89,8 @@ const Details = ({ navigation, route }) => {
                         <Text className="text-orange-900 italic font-semibold">{time.toLocaleTimeString('en-US')}</Text>
                     </View>
                 </View>
-                <Text className="mb-5 text-justify text-lg text-slate-700 ">
-                    {modifiedDetails}
+                <Text className=" text-justify text-lg text-slate-700 ">
+                    {details}
                 </Text>
                 {/* <Text className="mb-5 text-justify text-lg text-slate-700 ">
                     {modifiedDetails.slice(1, 2)}

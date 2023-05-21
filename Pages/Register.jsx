@@ -17,7 +17,7 @@ import { BACKEND_URI, UserContext } from '../Components/Root'
 import { ToastAndroid } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useQuery } from '@tanstack/react-query'
-export const uploadImage = async (uri) => {
+export const uploadImage = async (uri, exp = 0) => {
     try {
         const formData = new FormData();
         formData.append('image', {
@@ -25,7 +25,11 @@ export const uploadImage = async (uri) => {
             type: 'image/jpeg',
             name: 'upload.jpg',
         });
-        const response = await fetch('https://api.imgbb.com/1/upload?key=a9952d5dc535d9f1c2680526d288c8dc', {
+        let imgBBURI = 'https://api.imgbb.com/1/upload?key=a9952d5dc535d9f1c2680526d288c8dc'
+        if (exp)
+            imgBBURI += `&expiration=${exp}`;
+        // console.log(imgBBURI);
+        const response = await fetch(imgBBURI, {
             method: 'POST',
             body: formData,
         });
@@ -164,7 +168,7 @@ const Register = () => {
             aspect: [1, 1],
             quality: 1,
         });
-        console.log(result);
+        // console.log(result);
         if (!result.canceled) {
             // setSelectedImage("image.jpg")
             const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {
