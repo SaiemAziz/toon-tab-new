@@ -66,7 +66,7 @@ const Posts = () => {
                 <ActivityIndicator size={80} color="#150015" />
             </View> :
                 <FlatList
-                    className="p-5 pt-0"
+                    className="p-2 pt-0"
                     data={posts}
                     renderItem={({ item, index }) => <SinglePost
                         item={item}
@@ -199,7 +199,7 @@ export function SinglePost({ item, index, color }) {
     }
 
     return <Pressable onPress={handlerSeeMore}>
-        <View className={`border-4 rounded-2xl overflow-hidden border-white mb-5 bg-${color}-200 flex-row items-center`}>
+        <View className={`border-4 rounded-2xl overflow-hidden border-white mb-2 bg-${color}-100 flex-row items-center`}>
 
             <Image
                 source={{

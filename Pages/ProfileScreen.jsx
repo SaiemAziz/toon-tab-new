@@ -16,7 +16,7 @@ const ProfileScreen = ({ route, navigation }) => {
     let time = new Date(user?.birthDate)
     let [tab, setTab] = useState(opt[0])
     let handlerBack = () => {
-        navigation.navigate("AuthorisedScreen")
+        navigation.goBack()
     }
     let handlerLogout = () => {
         logoutUser()

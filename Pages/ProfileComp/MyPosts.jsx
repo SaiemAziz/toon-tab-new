@@ -72,13 +72,13 @@ const MyPosts = () => {
         )
 
     }
-    return (<View className="flex-1 pt-5">
+    return (<View className="flex-1 pt-2">
         {
             postQuery.isLoading ? <View className="flex-1 justify-center items-center">
                 <ActivityIndicator size={80} color="green" />
             </View> :
                 <FlatList
-                    className="p-5 pt-0"
+                    className="p-1 pt-0"
                     data={posts}
                     renderItem={({ item, index }) =>
                         <View className="relative">
