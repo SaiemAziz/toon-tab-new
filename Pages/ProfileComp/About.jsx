@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput } from 'react-native'
 import React, { useContext, useLayoutEffect, useState } from 'react'
 import { BACKEND_URI, UserContext } from '../../Components/Root'
 import { ScrollView } from 'react-native'
@@ -14,6 +14,8 @@ const About = () => {
 
 
     const [address, setAddress] = useState({})
+    const [phone, setPhone] = useState(user?.phone || "")
+    const [err, setErr] = useState("")
     // useLayoutEffect(() => {
     //     console.log(user);
     //     setAddress(user?.address || {})
@@ -55,24 +57,43 @@ const About = () => {
 
 
     let handleUpdate = async () => {
-        if (Object.keys(address).length) {
-            // console.log(BACKEND_URI + '/update-user?email=' + user?.email);
-            let res = await fetch(BACKEND_URI + '/update-user?email=' + user?.email, {
-                method: 'PUT',
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ address: address })
-            })
-            let data = await res.json()
-            // console.log(data);
-            setUser(prev => {
-                return { ...prev, address: address }
-            })
+        if (phone && !/^(\+88)?[0-0]{1}[1-1]{1}[0-9]{3}[-]?[0-9]{6}$/.test(phone)) {
+            setErr("Invalid phone number")
+            return
         }
+        setErr("")
+        let updateDoc = {}
+
+        if (Object.keys(address).length)
+            updateDoc = { address: address, phone: phone }
+        else
+            updateDoc = { phone: phone }
+        // console.log(BACKEND_URI + '/update-user?email=' + user?.email);
+        let res = await fetch(BACKEND_URI + '/update-user?email=' + user?.email, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ ...updateDoc })
+        })
+        let data = await res.json()
+        console.log(data);
+        setUser(prev => {
+            return { ...prev, ...updateDoc }
+        })
     }
     return (
         <ScrollView className="relative px-3">
+            <Text className="text-white border-b-2 font-bold text-right pb-2 border-white">Personal</Text>
+            <View className="flex-row gap-5 mb-4 mt-1 items-center">
+                <Text className="text-green-200">Phone:</Text>
+                <TextInput className="flex-1 p-2 border rounded-xl border-red-100  text-white"
+                    inputMode="tel"
+                    onChangeText={(e) => setPhone(e)}
+                    value={phone}
+                />
+            </View>
+            {err && <Text className="text-red-500 text-center my-1">{err}</Text>}
             <Text className="text-white border-b-2 font-bold text-right pb-2 border-white">Address</Text>
             <View className="flex-row gap-5 mt-1 items-center">
                 <Text className="text-green-200">Country:</Text>

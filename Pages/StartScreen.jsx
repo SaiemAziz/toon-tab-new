@@ -13,10 +13,11 @@ const StartScreen = ({ navigation, route }) => {
                 StackActions.replace(user ? 'AuthorisedScreen' : 'WelcomeScreen')
             );
         }
-        if (!loading)
+        if (!loading) {
             setTimeout(() => {
                 func();
             }, 5000);
+        }
     }, [loading])
     return (
         <LinearGradient colors={["white", "darkblue"]} className="flex-1 bg-blue-400">

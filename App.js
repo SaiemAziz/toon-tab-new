@@ -24,17 +24,6 @@ const queryClient = new QueryClient()
 const Stack = createStackNavigator();
 export default function App() {
 
-  // clear localStorage
-  useLayoutEffect(() => {
-    let func = async () => {
-      let myUser = await AsyncStorage.getItem('user')
-      await AsyncStorage.clear()
-      if (myUser)
-        await AsyncStorage.setItem('user', myUser)
-    }
-    func()
-  })
-
   return (
     <QueryClientProvider client={queryClient}>
       <View className={`flex-1`}>

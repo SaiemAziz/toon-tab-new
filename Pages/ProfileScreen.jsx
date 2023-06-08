@@ -61,6 +61,9 @@ const ProfileScreen = ({ route, navigation }) => {
                             <View className="flex-col p-2">
                                 <Text className="w-[200px] text-center font-semibold text-xl text-blue-900">@{user?.userName || "No Name"}</Text>
                                 <Text className="text-center italic text-xl mb-3">{time.toLocaleDateString() || "No Birthdate"}</Text>
+                                {
+                                    user?.phone && <Text className="text-center">Phone: {user?.phone}</Text>
+                                }
                                 <Text className="text-center">Country: {user?.address?.Country || "-----"}</Text>
                                 <Text className="text-center">Division: {user?.address?.Division || "-----"}</Text>
                                 <Text className="text-center">District: {user?.address?.District || "-----"}</Text>

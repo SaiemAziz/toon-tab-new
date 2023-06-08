@@ -94,13 +94,17 @@ const Register = () => {
         let formImage = selectedImage
 
         if (available === 'taken') return setErr('Username not available')
-        if (!formDate || !formName || !formEmail.includes('@') || !formPass || !formCon || !formImage) {
+        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(formEmail)) {
+            setErr('Enter a valid email address')
+            return
+        }
+        if (!formDate || !formName || !formEmail || !formPass || !formCon || !formImage) {
             setErr("Please enter all valid information");
             return;
         }
+        setLoading(true);
         formImage = await uploadImage(`data:image/jpeg;base64,${formImage}`)
         // console.log(formImage);
-        setLoading(true);
         if (!formImage) {
             setLoading(false);
             return setErr("Photo upload failed, try again");
@@ -280,6 +284,7 @@ const Register = () => {
 
                     </ScrollView>
                 </View>
+
                 {err && <Text className="mb-5 font-semibold text-center text-red-500">{err}</Text>}
                 <View className="items-center gap-5">
                     {

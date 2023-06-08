@@ -15,13 +15,19 @@ const Root = ({ children }) => {
     let navigation = useNavigation()
     let [user, setUser] = useState(null)
     let [loading, setLoading] = useState(true)
+    const [remember, setRemember] = useState(false);
+
+
     const auth = getAuth(app)
+
+
+    // check existing user according to remember
     useLayoutEffect(() => {
-        let func = async () => {
-            let myUser = await AsyncStorage.getItem('user')
-            if (myUser) {
-                myUser = JSON.parse(myUser)
-                setUser(myUser)
+        let funcUserCheck = async (localUser) => {
+            // console.log(localUser);
+            if (localUser) {
+                localUser = JSON.parse(localUser)
+                setUser(localUser)
                 setLoading(false)
             }
             else onAuthStateChanged(auth, async (currentUser) => {
@@ -54,15 +60,36 @@ const Root = ({ children }) => {
             }
             )
         }
-
+        let func = async () => {
+            setLoading(true)
+            let localUser = await AsyncStorage.getItem('user')
+            let localRem = await AsyncStorage.getItem('remember')
+            await AsyncStorage.clear()
+            setRemember(localRem ? true : false)
+            if (localRem)
+                funcUserCheck(localUser)
+            else {
+                setUser(null)
+                setLoading(false)
+            }
+        }
         func()
     }, [])
+
+
+
+    // set user in local storage
     useEffect(() => {
         let func = async () => {
-            await AsyncStorage.setItem('user', JSON.stringify(user))
+            if (user)
+                await AsyncStorage.setItem('user', JSON.stringify(user))
+            else
+                await AsyncStorage.removeItem('user')
         }
         func()
     }, [user])
+
+
     // register new USER
     let registerUser = async (email, password) => {
         setLoading(true)
@@ -108,7 +135,7 @@ const Root = ({ children }) => {
 
 
     let contextValue = {
-        user, loading, setLoading, registerUser, loginUser, setUser, updateUser, logoutUser, sendVerification
+        user, loading, setLoading, registerUser, loginUser, setUser, updateUser, logoutUser, sendVerification, remember, setRemember
     }
     return (
         <UserContext.Provider value={contextValue}>

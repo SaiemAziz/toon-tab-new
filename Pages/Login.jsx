@@ -17,7 +17,7 @@ import { TouchableOpacity } from 'react-native'
 
 const Login = () => {
     let navigation = useNavigation()
-    let { loginUser, user, loading, setLoading, setUser, updateUser, sendVerification, logoutUser } = useContext(UserContext)
+    let { loginUser, user, loading, setLoading, setUser, updateUser, sendVerification, logoutUser, remember, setRemember } = useContext(UserContext)
     let [email, setEmail] = useState('')
     let [verifyBtn, setVerifyBtn] = useState(false)
     let [userName, setUserName] = useState('')
@@ -81,11 +81,21 @@ const Login = () => {
         // setPass('')
     }
 
+
+    // send email verification
     let verifyHandler = () => {
         if (email) {
             sendVerification();
         }
         setVerifyBtn(false)
+    }
+
+    // set remember me to local storage
+    let remSetToLocal = async (rem) => {
+        if (rem)
+            await AsyncStorage.setItem("remember", JSON.stringify(1))
+        else
+            await AsyncStorage.removeItem("remember")
     }
     return (
         <ImageBackground
@@ -176,6 +186,19 @@ const Login = () => {
                         )}
                     </Pressable> */}
                     </ScrollView>
+                </View>
+                <View className="flex-row gap-5 mb-5 items-center">
+                    <TouchableOpacity onPress={() => {
+                        setRemember(prev => {
+                            remSetToLocal(!prev)
+                            return !prev
+                        })
+                    }}>
+                        <View className={`border-2 border-green-600 rounded-2xl `}>
+                            <View className={`m-0.5 p-2 rounded-2xl ${remember ? "bg-green-600" : ""}`}></View>
+                        </View>
+                    </TouchableOpacity>
+                    <Text className="text-green-700">Remember Me</Text>
                 </View>
                 {err && <Text className="mb-5 font-semibold text-center text-red-500">{err}</Text>}
                 <View className="items-center gap-5">

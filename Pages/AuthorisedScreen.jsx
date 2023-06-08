@@ -1,5 +1,5 @@
 import { View, Text, StatusBar, useWindowDimensions, Image } from 'react-native'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useLayoutEffect, useState } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import Icon from 'react-native-vector-icons/AntDesign';
 import { Pressable } from 'react-native'
@@ -9,6 +9,7 @@ import About from './TabScreens/About';
 import { BACKEND_URI, UserContext } from '../Components/Root';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AuthorisedScreen = ({ route, navigation }) => {
     // let dimention = useWindowDimensions();
@@ -39,6 +40,7 @@ const AuthorisedScreen = ({ route, navigation }) => {
     let handlerCamera = () => {
         navigation.navigate('ImageScreen')
     }
+
     return (
         <LinearGradient colors={["white", "purple"]} className="flex-1">
             <SafeAreaView className="flex-1  justify-center items-center">
