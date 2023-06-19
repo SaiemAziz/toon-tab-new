@@ -22,6 +22,8 @@
     "expo-splash-screen": "~0.18.2",
     "expo-status-bar": "~1.4.4",
     "firebase": "^9.21.0",
+    "gsap": "^3.12.1",
+    "gsap-rn": "^0.0.18",
     "install": "^0.13.0",
     "lottie-react-native": "5.1.4",
     "nativewind": "^2.0.11",

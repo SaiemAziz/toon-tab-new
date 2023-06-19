@@ -144,7 +144,7 @@ export function SinglePost({ item, index, color }) {
         }
     }
 
-    let deleteReact = (reaction) => {
+    let deleteReact = () => {
 
         fetch(BACKEND_URI + `/react-delete?email=${user?.email}&postID=${_id}`, {
             method: 'DELETE'

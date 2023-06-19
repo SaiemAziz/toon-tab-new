@@ -16,6 +16,7 @@ import * as Print from 'expo-print';
 import { shareAsync } from 'expo-sharing';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
+import { ScrollView } from 'react-native';
 const ImageScreen = () => {
     let navigation = useNavigation()
     const [image, setImage] = useState(null)
@@ -133,56 +134,65 @@ const ImageScreen = () => {
     return (
         <LinearGradient colors={["white", "lightgreen"]} className="flex-1">
 
-            <SafeAreaView className="flex-1 pt-7 justify-center gap-5 items-center">
-                <TouchableOpacity className="absolute top-10 left-5 rounded-[100px] border-2 border-green-900 overflow-hidden w-fit z-50" onPress={handlerBack}>
-                    <View className="justify-center items-center p-2">
-                        <Icon name="keyboard-backspace" size={35} color="darkgreen" />
-                    </View>
-                </TouchableOpacity>
-                <View className="flex-1 justify-center items-center">
-                    <TouchableOpacity className="p-5 mb-5 rounded-full bg-green-700" onPress={PickImage}>
-                        <Text className="text-center text-lg font-bold text-green-200">{image ? "Another Image" : "Upload Image"}</Text>
+            <SafeAreaView className="flex-1 p-5 justify-center gap-5 items-center">
+                <View className="flex-row space-x-5 z-50">
+                    <TouchableOpacity className="rounded-[100px] border-2 border-green-900 overflow-hidden w-fit z-50" onPress={handlerBack}>
+                        <View className="justify-center items-center p-2">
+                            <Icon name="keyboard-backspace" size={35} color="darkgreen" />
+                        </View>
                     </TouchableOpacity>
+                    <Text className="text-center flex-1 italic font-semibold text-xl bg-green-900 text-white p-3 rounded-bl-full rounded-tr-full">Check Cartoon</Text>
+                </View>
+                <View className="flex-1 items-center">
+                    <View className="flex-1 justify-center items-end">
+                        <TouchableOpacity className="p-5 py-2 mt-5 mb-3 rounded-full border-green-700 border" onPress={PickImage}>
+                            <Text className="text-center text-lg font-bold text-green-900">{image ? "Another Image" : "Upload Image"}</Text>
+                        </TouchableOpacity>
+                        {
+                            image &&
+                            <Image
+                                source={{
+                                    uri: image
+                                }}
+                                className="w-80 h-80 rounded-xl"
+                            />
+                        }
+                    </View>
                     {
-                        image &&
-                        <Image
-                            source={{
-                                uri: image
-                            }}
-                            className="w-80 h-80 rounded-xl"
-                        />
+                        load ? <View className="flex-1 justify-center items-center">
+                            <ActivityIndicator color="green" size={60} />
+                        </View> :
+                            <View className="flex-1 w-full py-5">
+                                {pred.length > 0 && <View>
+                                    <View className="justify-center items-center my-5">
+                                        <TouchableOpacity className="flex-row space-x-5" onPress={printToFile}>
+                                            <Text className="text-center text-3xl italic text-blue-700 font-bold">Results</Text>
+                                            <Icon name="file-download" size={35} color="darkblue" />
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View className="flex-1">
+
+                                        <FlatList
+                                            className=" border-0 border-green-950"
+                                            data={pred}
+                                            renderItem={({ item, index }) => (
+                                                <View className={`rounded-xl flex-row justify-between p-3 py-1.5 w-full my-1 border-green-600 border-2 items-center`}>
+                                                    <Text className=" text-green-600 text-lg">{item?.class?.toUpperCase()}</Text>
+                                                    <Text className="text-lg text-blue-800">{(item?.score * 100).toFixed(2)}%</Text>
+                                                </View>
+                                            )}
+                                            keyExtractor={(item, index) => index}
+                                        />
+                                    </View>
+
+                                </View>
+                                }
+                                {
+                                    err && <Text className="text-center my-5 font-bold text-xl text-red-500">{err}</Text>
+                                }
+                            </View>
                     }
                 </View>
-                {
-                    load ? <View className="flex-1">
-                        <ActivityIndicator color="green" size={40} />
-                    </View> :
-                        <View className="flex-1 px-5 w-full">
-                            {pred.length > 0 && <View>
-                                <View className="justify-center items-center">
-                                    <TouchableOpacity className="flex-row gap-2" onPress={printToFile}>
-                                        <Text className="text-center text-3xl italic text-blue-700 font-bold">Results</Text>
-                                        <Icon name="file-download" size={35} color="darkblue" />
-                                    </TouchableOpacity>
-                                </View>
-                                <FlatList
-                                    className="p-2 border-0 border-green-950"
-                                    data={pred}
-                                    renderItem={({ item, index }) => (
-                                        <View className={`rounded-xl flex-row justify-between p-3 w-full my-1 border-green-600 border-2 items-center`}>
-                                            <Text className=" text-green-600 text-lg">{item?.class?.toUpperCase()}</Text>
-                                            <Text className="text-lg text-blue-800">{(item?.score * 100).toFixed(2)}%</Text>
-                                        </View>
-                                    )}
-                                    keyExtractor={(item, index) => index}
-                                />
-                            </View>
-                            }
-                            {
-                                err && <Text className="text-center my-5 font-bold text-xl text-red-500">{err}</Text>
-                            }
-                        </View>
-                }
             </SafeAreaView>
         </LinearGradient>
     )
