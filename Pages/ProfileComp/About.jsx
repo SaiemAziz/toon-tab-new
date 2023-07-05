@@ -3,50 +3,80 @@ import React, { useContext, useLayoutEffect, useState } from 'react'
 import { BACKEND_URI, UserContext } from '../../Components/Root'
 import { ScrollView } from 'react-native'
 import { SelectList } from 'react-native-dropdown-select-list'
-import { allCountries } from '../../Components/allCountries'
+import { ActivityIndicator } from 'react-native'
+import { useQuery } from '@tanstack/react-query'
+// import { allCountries } from '../../Components/allCountries'
 
 const About = () => {
     let { user, setUser } = useContext(UserContext)
-
+    const [allCountries, setAllCountries] = useState([])
     const [countries, setCountries] = useState([])
     const [divisions, setDivisions] = useState([])
     const [districts, setDistricts] = useState([])
 
-
     const [address, setAddress] = useState({})
     const [phone, setPhone] = useState(user?.phone || "")
     const [err, setErr] = useState("")
-    // useLayoutEffect(() => {
-    //     console.log(user);
-    //     setAddress(user?.address || {})
-    // }, [user])
+
+    let countryQuery = useQuery({
+        "queryKey": [BACKEND_URI + "/graphql"],
+        'queryFn': async () => {
+            let res = await fetch(BACKEND_URI + "/graphql", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    query: `
+                    query {
+                        getAllCountries {
+                          name
+                          divisions {
+                            name
+                            districts {
+                              name
+                            }
+                          }
+                        }
+                      }
+                    `
+                })
+            })
+            let data = await res.json()
+            setAllCountries(data?.data?.getAllCountries)
+            return data?.data?.getAllCountries
+        }
+    })
+
     useLayoutEffect(() => {
         setCountries([])
         setDivisions([])
         setDistricts([])
         let data = []
-        allCountries.forEach((country, i) => data.push({
+        allCountries?.forEach((country, i) => data.push({
             value: country.name
         }))
         setCountries(data)
-    }, [])
+    }, [allCountries])
+
     useLayoutEffect(() => {
         setDivisions([])
         setDistricts([])
         let data = []
         setTimeout(() => {
-            let selectedCountry = allCountries.find(country => country.name === address?.Country)
+            let selectedCountry = allCountries?.find(country => country.name === address?.Country)
 
             if (selectedCountry)
                 selectedCountry?.divisions?.forEach(div => data.push({ value: div.name }))
             setDivisions(data)
         }, 500);
     }, [address?.Country])
+
     useLayoutEffect(() => {
         setDistricts([])
         let data = []
         setTimeout(() => {
-            let selectedCountry = allCountries.find(country => country.name === address?.Country)
+            let selectedCountry = allCountries?.find(country => country.name === address?.Country)
             let selectedDivision = selectedCountry?.divisions?.find(div => div.name === address?.Division)
 
             if (selectedDivision)
@@ -77,11 +107,17 @@ const About = () => {
             body: JSON.stringify({ ...updateDoc })
         })
         let data = await res.json()
-        console.log(data);
+        // console.log(data);
         setUser(prev => {
             return { ...prev, ...updateDoc }
         })
     }
+
+
+    if (countryQuery?.isLoading) return <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size={80} color="green" />
+    </View>
+
     return (
         <ScrollView className="relative px-3">
             <Text className="text-white border-b-2 font-bold text-right pb-2 border-white">Personal</Text>
