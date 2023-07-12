@@ -13,7 +13,7 @@ const CommentScreen = ({ navigation, route }) => {
     let { user } = useContext(UserContext)
     let [comments, setComments] = useState([])
     let [myComment, setMyComment] = useState('')
-    let [load, setLoad] = useState(false)
+    // let [load, setLoad] = useState(false)
     let [loadSubmit, setLoadSubmit] = useState(false)
     let { postID, item } = route?.params
 
@@ -22,48 +22,24 @@ const CommentScreen = ({ navigation, route }) => {
         'queryFn': async () => {
             let res = await fetch(BACKEND_URI + `/all-comments?postID=${postID}`)
             let data = await res.json()
+            setLoadSubmit(false)
             return data?.comments
         }
     })
     useEffect(() => {
         setComments(commentQuery.data)
     }, [commentQuery.data])
-    // useLayoutEffect(() => {
-    //     fetchComments(true)
-    //     return () => { }
-    // }, [])
 
-    // let fetchComments = async (refetch = false) => {
-    //     setLoad(true)
-    //     let allComments = await AsyncStorage.getItem(`allComments-${postID}`)
-    //     if (allComments && !refetch) {
-    //         setComments(JSON.parse(allComments))
-    //     } else {
-    //         let res = await fetch(BACKEND_URI + `/all-comments?postID=${postID}`)
-    //         let data = await res.json()
-    //         await AsyncStorage.setItem(`allComments-${postID}`, JSON.stringify(data?.comments))
-    //         setComments(data?.comments)
-    //         setLoad(false)
-    //     }
-
-    //     // .then(res => res.json())
-    //     // .then(data => {
-    //     //     setComments(data.comments)
-    //     //     setLoad(false)
-    //     // })
-    // }
     let handlerComment = (e) => {
-        // console.log(e.nativeEvent.text);
         setMyComment(e)
     }
     let handlerCancel = () => {
-        // console.log(e.nativeEvent.text);
         navigation.navigate("Details", item)
     }
     let handlerSubmit = () => {
         if (myComment !== '') {
             // setLoad(true)
-            // setLoadSubmit(true)
+            setLoadSubmit(true)
             let comm = {
                 details: myComment,
                 postID: postID,
@@ -100,6 +76,7 @@ const CommentScreen = ({ navigation, route }) => {
                 text: 'Ok',
                 style: 'default',
                 onPress: () => {
+                    setLoadSubmit(true)
                     fetch(BACKEND_URI + `/delete-comment?commentID=${commentID}`, {
                         method: 'delete'
                     }).then(res => res.json())
@@ -125,7 +102,7 @@ const CommentScreen = ({ navigation, route }) => {
                     <View className="flex-1">
                         <FlatList
                             data={comments}
-                            renderItem={({ item, index }) => <Comment comment={item} load={load} handleDelete={handleDelete} />}
+                            renderItem={({ item, index }) => <Comment comment={item} handleDelete={handleDelete} />}
                             keyExtractor={(item, index) => item._id}
                         />
                     </View>
@@ -147,7 +124,7 @@ const CommentScreen = ({ navigation, route }) => {
                     placeholder="Please enter a comment"
                 />
                 {
-                    loadSubmit ? <ActivityIndicator size="large" color="red" />
+                    (loadSubmit || commentQuery.isLoading) ? <ActivityIndicator size="large" color="red" />
                         :
                         <View className="justify-between">
                             <View className="overflow-hidden rounded-xl">
